@@ -1,0 +1,422 @@
+{
+  "info": {
+    "name": "RechargeWin Complete API Collection",
+    "description": "All API endpoints for RechargeWin gamified recharge platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1"
+    },
+    {
+      "key": "userToken",
+      "value": ""
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    },
+    {
+      "key": "winnerId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Register Regular User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"phoneNumber\": \"9876543210\", \"password\": \"password123\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Register Admin User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"phoneNumber\": \"9999999999\", \"password\": \"admin123\", \"role\": \"admin\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login Regular User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["if (pm.response.code === 200) { const response = pm.response.json(); pm.collectionVariables.set('userToken', response.token); }"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"phoneNumber\": \"9876543210\", \"password\": \"password123\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Admin User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["if (pm.response.code === 200) { const response = pm.response.json(); pm.collectionVariables.set('adminToken', response.token); }"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"phoneNumber\": \"9999999999\", \"password\": \"admin123\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 User Profile & Rewards",
+      "item": [
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Get User Rewards",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/rewards",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "rewards"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💰 Recharge & Payment",
+      "item": [
+        {
+          "name": "Initiate Recharge",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["if (pm.response.code === 200) { const response = pm.response.json(); pm.collectionVariables.set('orderId', response.orderId); }"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"rechargePhoneNumber\": \"9876543210\", \"operator\": \"Airtel\", \"amount\": 100}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/recharge/initiate",
+              "host": ["{{baseUrl}}"],
+              "path": ["recharge", "initiate"]
+            }
+          }
+        },
+        {
+          "name": "Verify Recharge Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"orderId\": \"{{orderId}}\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/recharge/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["recharge", "verify"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌐 Public Endpoints",
+      "item": [
+        {
+          "name": "Get Approved Winners",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/public/winners",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "winners"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👑 Admin Panel",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/dashboard/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "dashboard", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Users List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"code\": \"WELCOME50\", \"description\": \"Welcome bonus for new users\", \"discountValue\": 50, \"expiresAt\": \"2024-12-31T23:59:59Z\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/coupons",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "coupons"]
+            }
+          }
+        },
+        {
+          "name": "Get Active Lotteries",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/lotteries/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "lotteries", "active"]
+            }
+          }
+        },
+        {
+          "name": "Declare Winner",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["if (pm.response.code === 201) { const response = pm.response.json(); pm.collectionVariables.set('winnerId', response.winner.id); }"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"lotteryId\": \"your-lottery-id-here\", \"prizeDescription\": \"iPhone 15 Pro Max\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/winners/declare",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "winners", "declare"]
+            }
+          }
+        },
+        {
+          "name": "Approve Winner",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/winners/{{winnerId}}/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "winners", "{{winnerId}}", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Upload Winner Poster",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "poster",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/winners/{{winnerId}}/upload-poster",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "winners", "{{winnerId}}", "upload-poster"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

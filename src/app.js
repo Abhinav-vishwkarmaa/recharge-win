@@ -1,0 +1,39 @@
+import express from 'express';
+import cors from 'cors';
+import sequelize from './config/db.js';
+import errorMiddleware from './middlewares/errorMiddleware.js';
+import cronJobs from './utils/cronJobs.js';
+
+// Routes
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import rechargeRoutes from './routes/rechargeRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import publicRoutes from './routes/publicRoutes.js';
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/recharge', rechargeRoutes);
+app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/public', publicRoutes);
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Server is running' });
+});
+
+// Error handling middleware
+app.use(errorMiddleware);
+
+// Start cron jobs
+cronJobs.start();
+
+export default app;
