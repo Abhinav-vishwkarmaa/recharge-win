@@ -1,5 +1,5 @@
 import app from './app.js';
-import sequelize from './config/db.js';
+import { initDatabase } from './config/db.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -8,16 +8,17 @@ const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
   try {
-    // Sync database
-    await sequelize.sync({ force: false }); // Set to true for development to drop and recreate tables
-    console.log('Database synchronized successfully.');
+    // Initialize database with force sync to fix any schema issues
+    console.log('🔄 Initializing database...');
+    await initDatabase();
 
     // Start server
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+      console.log(`🚀 Server is running on port ${PORT}`);
+      console.log(`📊 API Base URL: http://localhost:${PORT}/api/v1`);
     });
   } catch (error) {
-    console.error('Unable to start server:', error);
+    console.error('❌ Unable to start server:', error);
     process.exit(1);
   }
 };

@@ -168,6 +168,31 @@
               "path": ["user", "rewards"]
             }
           }
+        },
+        {
+          "name": "Add Winner Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"comment\": \"I am so excited to have won! Thank you RechargeWin for this amazing opportunity.\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/winners/{{winnerId}}/comment",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "winners", "{{winnerId}}", "comment"]
+            }
+          }
         }
       ]
     },
@@ -175,7 +200,7 @@
       "name": "💰 Recharge & Payment",
       "item": [
         {
-          "name": "Initiate Recharge",
+          "name": "Initiate Recharge (New System)",
           "event": [
             {
               "listen": "test",
@@ -198,12 +223,39 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"rechargePhoneNumber\": \"9876543210\", \"operator\": \"Airtel\", \"amount\": 100}"
+              "raw": "{\"couponId\": \"your-coupon-id-here\", \"rechargePhoneNumber\": \"9876543210\", \"useWallet\": true}"
             },
             "url": {
               "raw": "{{baseUrl}}/recharge/initiate",
               "host": ["{{baseUrl}}"],
               "path": ["recharge", "initiate"]
+            }
+          }
+        },
+        {
+          "name": "Get Recharge History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/recharge/history?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["recharge", "history"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
             }
           }
         },
@@ -245,6 +297,17 @@
               "raw": "{{baseUrl}}/public/winners",
               "host": ["{{baseUrl}}"],
               "path": ["public", "winners"]
+            }
+          }
+        },
+        {
+          "name": "Get Available Coupons",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/public/coupons",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "coupons"]
             }
           }
         }
@@ -298,7 +361,7 @@
           }
         },
         {
-          "name": "Create Coupon",
+          "name": "Create Lottery",
           "request": {
             "method": "POST",
             "header": [
@@ -313,12 +376,148 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"code\": \"WELCOME50\", \"description\": \"Welcome bonus for new users\", \"discountValue\": 50, \"expiresAt\": \"2024-12-31T23:59:59Z\"}"
+              "raw": "{\"title\": \"iPhone 15 Pro Max Draw\", \"prizeAmount\": 120000, \"description\": \"Win the latest iPhone 15 Pro Max\", \"drawDate\": \"2025-01-15T00:00:00Z\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/lotteries",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "lotteries"]
+            }
+          }
+        },
+        {
+          "name": "Create Coupon (New System)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"title\": \"Airtel ₹199 Recharge\", \"operator\": \"Airtel\", \"description\": \"Get ₹199 Airtel recharge + chance to win iPhone\", \"imageUrl\": \"https://example.com/airtel199.jpg\", \"amount\": 199, \"quantity\": 100, \"lotteryId\": \"your-lottery-id-here\", \"expiresAt\": \"2025-12-31T23:59:59Z\"}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/coupons",
               "host": ["{{baseUrl}}"],
               "path": ["admin", "coupons"]
+            }
+          }
+        },
+        {
+          "name": "Get Pending Recharges",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/recharges/pending?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "recharges", "pending"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Process Recharge (Approve/Reject)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"rechargeId\": \"your-recharge-id-here\", \"action\": \"approve\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/recharges/process",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "recharges", "process"]
+            }
+          }
+        },
+        {
+          "name": "Get Active Lotteries (New)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/lotteries/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "lotteries", "active"]
+            }
+          }
+        },
+        {
+          "name": "Declare Winner (New System)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"lotteryId\": \"your-lottery-id-here\", \"rechargeId\": \"your-recharge-id-here\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/winners/declare",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "winners", "declare"]
+            }
+          }
+        },
+        {
+          "name": "Get Winners List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/winners",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "winners"]
             }
           }
         },
@@ -336,56 +535,6 @@
               "raw": "{{baseUrl}}/admin/lotteries/active",
               "host": ["{{baseUrl}}"],
               "path": ["admin", "lotteries", "active"]
-            }
-          }
-        },
-        {
-          "name": "Declare Winner",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": ["if (pm.response.code === 201) { const response = pm.response.json(); pm.collectionVariables.set('winnerId', response.winner.id); }"]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{adminToken}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\"lotteryId\": \"your-lottery-id-here\", \"prizeDescription\": \"iPhone 15 Pro Max\"}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/winners/declare",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "winners", "declare"]
-            }
-          }
-        },
-        {
-          "name": "Approve Winner",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{adminToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/winners/{{winnerId}}/approve",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "winners", "{{winnerId}}", "approve"]
             }
           }
         },

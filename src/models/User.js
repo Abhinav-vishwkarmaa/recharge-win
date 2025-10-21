@@ -20,6 +20,10 @@ const User = sequelize.define('User', {
     type: DataTypes.DECIMAL(10, 2),
     defaultValue: 0.00,
   },
+  profile_image_url: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   referral_code: {
     type: DataTypes.STRING,
     unique: true,

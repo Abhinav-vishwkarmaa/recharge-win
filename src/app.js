@@ -4,12 +4,20 @@ import sequelize from './config/db.js';
 import errorMiddleware from './middlewares/errorMiddleware.js';
 import cronJobs from './utils/cronJobs.js';
 
+// Models for associations
+import Coupon from './models/Coupon.js';
+import Lottery from './models/Lottery.js';
+
 // Routes
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import rechargeRoutes from './routes/rechargeRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import publicRoutes from './routes/publicRoutes.js';
+
+// Define associations after all models are imported
+Coupon.belongsTo(Lottery, { foreignKey: 'lottery_id', as: 'Lottery' });
+Lottery.hasMany(Coupon, { foreignKey: 'lottery_id', as: 'Coupons' });
 
 const app = express();
 

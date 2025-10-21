@@ -23,11 +23,14 @@ const Winner = sequelize.define('Winner', {
       model: Lottery,
       key: 'id',
     },
-    unique: true,
     allowNull: false,
   },
-  prize_description: {
-    type: DataTypes.TEXT,
+  recharge_id: {
+    type: DataTypes.UUID,
+    allowNull: false,
+  },
+  prize_amount: {
+    type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
   },
   poster_image_url: {
@@ -49,6 +52,10 @@ const Winner = sequelize.define('Winner', {
   declared_at: {
     type: DataTypes.DATE,
     allowNull: false,
+  },
+  winner_comment: {
+    type: DataTypes.TEXT,
+    allowNull: true,
   },
 }, {
   timestamps: true,

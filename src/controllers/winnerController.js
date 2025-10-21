@@ -72,3 +72,30 @@ export const uploadPoster = [
     }
   },
 ];
+
+export const addWinnerComment = async (req, res, next) => {
+  try {
+    const { winnerId } = req.params;
+    const { comment } = req.body;
+
+    if (!comment || comment.trim().length === 0) {
+      return res.status(400).json({ message: 'Comment cannot be empty' });
+    }
+
+    const winner = await Winner.findByPk(winnerId);
+    if (!winner) {
+      return res.status(404).json({ message: 'Winner not found' });
+    }
+
+    // Only allow winner to comment
+    if (winner.user_id !== req.user.id) {
+      return res.status(403).json({ message: 'Only winner can add comments' });
+    }
+
+    await winner.update({ winner_comment: comment.trim() });
+
+    res.json({ message: 'Comment added successfully', winner_comment: comment.trim() });
+  } catch (err) {
+    next(err);
+  }
+};

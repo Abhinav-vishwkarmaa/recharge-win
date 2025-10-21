@@ -1,6 +1,8 @@
 import User from '../models/User.js';
 import UserCoupon from '../models/UserCoupon.js';
 import Lottery from '../models/Lottery.js';
+import LotteryEntry from '../models/LotteryEntry.js';
+import Recharge from '../models/Recharge.js';
 import Coupon from '../models/Coupon.js';
 import { Op } from 'sequelize';
 
@@ -22,9 +24,21 @@ export const getRewards = async (req, res, next) => {
         where: { user_id: req.user.id },
         include: [{ model: Coupon, as: 'Coupon' }],
       }),
-      Lottery.findAll({
+      LotteryEntry.findAll({
         where: { user_id: req.user.id },
-        attributes: ['id', 'lottery_number', 'status', 'expires_at', 'createdAt'],
+        include: [
+          {
+            model: Lottery,
+            as: 'Lottery',
+            attributes: ['title', 'prize_amount', 'draw_date'],
+          },
+          {
+            model: Recharge,
+            as: 'Recharge',
+            attributes: ['amount', 'status'],
+          },
+        ],
+        attributes: ['id', 'lottery_number', 'is_winner', 'createdAt'],
       }),
     ]);
 
@@ -37,7 +51,14 @@ export const getRewards = async (req, res, next) => {
         expiresAt: uc.Coupon.expires_at,
         isUsed: uc.is_used,
       })),
-      lotteries,
+      lotteries: lotteries.map(le => ({
+        id: le.id,
+        lotteryNumber: le.lottery_number,
+        isWinner: le.is_winner,
+        lottery: le.Lottery,
+        recharge: le.Recharge,
+        createdAt: le.createdAt,
+      })),
     });
   } catch (err) {
     next(err);

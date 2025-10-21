@@ -9,33 +9,32 @@ const Lottery = sequelize.define('Lottery', {
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
-  user_id: {
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  prize_amount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+  draw_date: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  is_active: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
+  created_by_admin_id: {
     type: DataTypes.UUID,
     references: {
       model: User,
       key: 'id',
     },
-    allowNull: false,
-  },
-  recharge_id: {
-    type: DataTypes.UUID,
-    references: {
-      model: Recharge,
-      key: 'id',
-    },
-    unique: true,
-    allowNull: false,
-  },
-  lottery_number: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  status: {
-    type: DataTypes.ENUM('active', 'won', 'lost', 'expired'),
-    defaultValue: 'active',
-  },
-  expires_at: {
-    type: DataTypes.DATE,
     allowNull: false,
   },
 }, {
@@ -44,7 +43,7 @@ const Lottery = sequelize.define('Lottery', {
 });
 
 // Associations
-Lottery.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
-Lottery.belongsTo(Recharge, { foreignKey: 'recharge_id', as: 'Recharge' });
+Lottery.belongsTo(User, { foreignKey: 'created_by_admin_id', as: 'CreatedByAdmin' });
+User.hasMany(Lottery, { foreignKey: 'created_by_admin_id', as: 'CreatedLotteries' });
 
 export default Lottery;
